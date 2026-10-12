@@ -1,0 +1,79 @@
+<UserControl x:Class="CPUx.Views.BatteryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CPUx.Controls">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel>
+            <Border Style="{StaticResource Card}" Padding="40" Visibility="{Binding Present, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+                <StackPanel HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource I.Plug}" Width="40" Height="40" Foreground="{DynamicResource Text.Tertiary}" />
+                    <TextBlock Text="No battery detected" Style="{StaticResource T.CardTitle}" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                    <TextBlock Text="This PC runs from mains power." Style="{StaticResource T.Label}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Visibility="{Binding Present, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Card}" Padding="22">
+                        <DockPanel>
+                            <Grid DockPanel.Dock="Left" Width="150" Height="150" Margin="0,0,24,0">
+                                <c:RingGauge Value="{Binding Percent}" Stroke="{DynamicResource Brush.Battery}" Thickness="12" Sweep="360" />
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding PercentText}" Style="{StaticResource T.Big}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="charge" Style="{StaticResource T.Label}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center">
+                                <Border Style="{StaticResource Chip}" Background="{DynamicResource Soft.Battery}" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <c:Icon Data="{StaticResource I.Bolt}" Width="12" Height="12" Foreground="{DynamicResource Brush.Battery}" Margin="0,0,5,0" />
+                                        <TextBlock Text="{Binding State}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Battery}" />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock Text="{Binding Subtitle}" FontFamily="{StaticResource Font.Display}" FontSize="20" FontWeight="SemiBold" Margin="0,10,0,6" />
+                                <TextBlock Style="{StaticResource T.Label}">
+                                    <Run Text="Battery health " /><Run Text="{Binding HealthText, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource Text.Primary}" />
+                                </TextBlock>
+                                <ProgressBar Style="{StaticResource Bar}" Value="{Binding Health, Mode=OneWay}" Margin="0,8,0,0" Width="220"
+                                             HorizontalAlignment="Left" Foreground="{DynamicResource Brush.Battery}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Live readings" Style="{StaticResource T.CardTitle}" Margin="0,0,0,12" />
+                            <ItemsControl ItemsSource="{Binding Stats}" Style="{StaticResource StatGrid}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <c:MasonryPanel MinColumnWidth="360" Spacing="16" Margin="0,16,0,0">
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Charge level (this session)" Style="{StaticResource T.CardTitle}" Margin="0,0,0,12" />
+                            <Border BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="1" CornerRadius="8" Height="150">
+                                <c:LiveChart Series="{Binding ChargeSeries}" Stroke="{DynamicResource Brush.Battery}" Maximum="100" ScaleUnit="%" CornerRadius="8" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="Charge / discharge power" Style="{StaticResource T.CardTitle}" Margin="0,0,0,12" />
+                            <Border BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="1" CornerRadius="8" Height="150">
+                                <c:LiveChart Series="{Binding RateSeries}" Stroke="{DynamicResource Brush.Power}" Maximum="0" MinimumScale="10" ScaleUnit="W" CornerRadius="8" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </c:MasonryPanel>
+
+                <TextBlock Text="Details" Style="{StaticResource T.Section}" />
+                <ItemsControl ItemsSource="{Binding Sections}" Style="{StaticResource SectionList}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

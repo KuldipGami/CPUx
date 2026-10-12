@@ -1,0 +1,123 @@
+<UserControl x:Class="CPUx.Views.NetworkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CPUx.Controls"
+             xmlns:vm="clr-namespace:CPUx.ViewModels">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel>
+            <!-- Total throughput -->
+            <Border Style="{StaticResource Card}" Padding="22">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="28" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center" MinWidth="190">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Net}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.ArrowDown}" Foreground="{DynamicResource Brush.Net}" Width="16" Height="16" />
+                            </Border>
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="Download" Style="{StaticResource T.Caption}" />
+                                <TextBlock Text="{Binding RxText}" Style="{StaticResource T.Stat}" FontSize="22" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Mem}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.ArrowUp}" Foreground="{DynamicResource Brush.Mem}" Width="16" Height="16" />
+                            </Border>
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="Upload" Style="{StaticResource T.Caption}" />
+                                <TextBlock Text="{Binding TxText}" Style="{StaticResource T.Stat}" FontSize="22" />
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource T.Caption}" Margin="0,16,0,0">
+                            <Run Text="Host name " /><Run Text="{Binding HostName, Mode=OneWay}" Foreground="{DynamicResource Text.Secondary}" />
+                        </TextBlock>
+                    </StackPanel>
+                    <Border Grid.Column="2" BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="1" CornerRadius="8" Height="170">
+                        <c:LiveChart Series="{Binding TotalRx}" Series2="{Binding TotalTx}" Stroke="{DynamicResource Brush.Net}"
+                                     Stroke2="{DynamicResource Brush.Mem}" Maximum="0" MinimumScale="12500" ScaleUnit="bps" StrokeThickness="2" CornerRadius="8" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <DockPanel Margin="0,0,0,0">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,0,12">
+                    <TextBlock Style="{StaticResource T.Label}" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Run Text="Show virtual &amp; disconnected" /><Run Text=" (" /><Run Text="{Binding HiddenCount, Mode=OneWay}" /><Run Text=" hidden)" />
+                    </TextBlock>
+                    <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ShowAll}" />
+                </StackPanel>
+                <TextBlock Text="Adapters" Style="{StaticResource T.Section}" />
+            </DockPanel>
+
+            <ItemsControl ItemsSource="{Binding Adapters}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:AdapterItem}">
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.25*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" MinWidth="300" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Net}">
+                                            <c:Icon x:Name="TypeIcon" Data="{StaticResource I.Network}" Foreground="{DynamicResource Brush.Net}" Width="18" Height="18" />
+                                        </Border>
+                                        <Border x:Name="StatusChip" DockPanel.Dock="Right" Style="{StaticResource Chip}" Background="{DynamicResource Soft.Good}">
+                                            <TextBlock x:Name="StatusText" Text="Connected" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Good}" />
+                                        </Border>
+                                        <StackPanel Margin="12,0,10,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource T.CardTitle}" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource T.Caption}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                    <WrapPanel Margin="0,12,0,0">
+                                        <Border Style="{StaticResource Chip}" Margin="0,0,6,6">
+                                            <TextBlock Text="{Binding Type}" FontSize="11.5" Foreground="{DynamicResource Text.Secondary}" />
+                                        </Border>
+                                        <Border Style="{StaticResource Chip}" Margin="0,0,6,6" Visibility="{Binding Speed, Converter={StaticResource HasValue}}">
+                                            <TextBlock Text="{Binding Speed}" FontSize="11.5" Foreground="{DynamicResource Text.Secondary}" />
+                                        </Border>
+                                        <Border Style="{StaticResource Chip}" Margin="0,0,6,6" Visibility="{Binding PrimaryAddress, Converter={StaticResource HasValue}}">
+                                            <TextBlock Text="{Binding PrimaryAddress}" FontSize="11.5" Foreground="{DynamicResource Text.Secondary}" />
+                                        </Border>
+                                    </WrapPanel>
+                                    <DockPanel Margin="0,8,0,8">
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Net}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding RxText}" FontSize="12" Margin="0,0,12,0" />
+                                            <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Mem}" Margin="0,0,5,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding TxText}" FontSize="12" />
+                                        </StackPanel>
+                                        <TextBlock Text="Throughput" Style="{StaticResource T.Label}" />
+                                    </DockPanel>
+                                    <Border BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="1" CornerRadius="8" Height="130">
+                                        <c:LiveChart Series="{Binding RxSeries}" Series2="{Binding TxSeries}" Stroke="{DynamicResource Brush.Net}"
+                                                     Stroke2="{DynamicResource Brush.Mem}" Maximum="0" MinimumScale="12500" ScaleUnit="bps" CornerRadius="8" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Totals}" Style="{StaticResource T.Caption}" Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <ContentControl Grid.Column="2" Content="{Binding Details}" ContentTemplate="{StaticResource SectionCard}" Focusable="False" />
+                        </Grid>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsWireless}" Value="True">
+                                <Setter TargetName="TypeIcon" Property="Data" Value="{StaticResource I.Wifi}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsUp}" Value="False">
+                                <Setter TargetName="StatusChip" Property="Background" Value="{DynamicResource Bg.Subtle}" />
+                                <Setter TargetName="StatusText" Property="Foreground" Value="{DynamicResource Text.Tertiary}" />
+                                <Setter TargetName="StatusText" Property="Text" Value="{Binding Status}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

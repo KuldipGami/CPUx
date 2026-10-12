@@ -1,0 +1,175 @@
+<UserControl x:Class="CPUx.Views.GpuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CPUx.Controls"
+             xmlns:vm="clr-namespace:CPUx.ViewModels">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel>
+            <TextBlock Text="Reading graphics adapters…" Style="{StaticResource T.Subtitle}" Margin="0,40" HorizontalAlignment="Center"
+                       Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+            <ListBox ItemsSource="{Binding Gpus}" SelectedItem="{Binding Selected}" Style="{StaticResource PillList}" Margin="0,0,0,8"
+                     Visibility="{Binding HasMultiple, Converter={StaticResource BoolToVis}}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:GpuItem}">
+                        <StackPanel Orientation="Horizontal">
+                            <c:Icon Data="{StaticResource I.Gpu}" Width="16" Height="16" Margin="0,0,9,0" />
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                <TextBlock Style="{StaticResource T.Caption}">
+                                    <Run Text="{Binding Kind, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding UsageText, Mode=OneWay}" />
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <ContentControl Content="{Binding Selected}" Focusable="False">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate DataType="{x:Type vm:GpuItem}">
+                        <StackPanel>
+                            <!-- Hero -->
+                            <Border Style="{StaticResource Card}" Padding="22">
+                                <DockPanel>
+                                    <Grid DockPanel.Dock="Right" Width="150" Height="150" Margin="24,0,0,0">
+                                        <c:RingGauge Value="{Binding Usage}" Stroke="{DynamicResource Brush.Gpu}" Thickness="12" />
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding UsageText}" Style="{StaticResource T.Big}" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding TempText}" Style="{StaticResource T.Label}" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Style="{StaticResource Chip}" Background="{DynamicResource Soft.Gpu}" Margin="0,0,6,0">
+                                                <TextBlock Text="{Binding Vendor}" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource Brush.Gpu}" />
+                                            </Border>
+                                            <Border Style="{StaticResource Chip}">
+                                                <TextBlock Text="{Binding Kind}" FontSize="11" Foreground="{DynamicResource Text.Secondary}" />
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontFamily="{StaticResource Font.Display}" FontSize="22" FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" Margin="0,10,0,4" />
+                                        <TextBlock Style="{StaticResource T.Label}" Margin="0,0,0,14">
+                                            <Run Text="Driver " /><Run Text="{Binding Driver, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <WrapPanel>
+                                            <Border Style="{StaticResource Inset}" Margin="0,0,8,8" Padding="12,7">
+                                                <StackPanel>
+                                                    <TextBlock Text="Dedicated memory" Style="{StaticResource T.Caption}" />
+                                                    <TextBlock Text="{Binding DedicatedText}" FontWeight="SemiBold" />
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Style="{StaticResource Inset}" Margin="0,0,8,8" Padding="12,7">
+                                                <StackPanel>
+                                                    <TextBlock Text="Shared memory" Style="{StaticResource T.Caption}" />
+                                                    <TextBlock Text="{Binding SharedText}" FontWeight="SemiBold" />
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Style="{StaticResource Inset}" Margin="0,0,8,8" Padding="12,7"
+                                                    Visibility="{Binding HasPower, Converter={StaticResource BoolToVis}}">
+                                                <StackPanel>
+                                                    <TextBlock Text="Power" Style="{StaticResource T.Caption}" />
+                                                    <TextBlock Text="{Binding PowerText}" FontWeight="SemiBold" />
+                                                </StackPanel>
+                                            </Border>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+
+                            <!-- Usage -->
+                            <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                                <DockPanel>
+                                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding UsageText}" Style="{StaticResource T.CardTitle}" Foreground="{DynamicResource Brush.Gpu}" />
+                                        <TextBlock Text="GPU utilization" Style="{StaticResource T.CardTitle}" />
+                                    </DockPanel>
+                                    <Border BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="1" CornerRadius="8" Height="220">
+                                        <c:LiveChart Series="{Binding UsageSeries}" Stroke="{DynamicResource Brush.Gpu}" Maximum="100" ShowDot="True"
+                                                     ScaleUnit="%" StrokeThickness="2" CornerRadius="8" />
+                                    </Border>
+                                </DockPanel>
+                            </Border>
+
+                            <!-- Stats -->
+                            <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18,16,18,4">
+                                <StackPanel>
+                                    <TextBlock Text="Live readings" Style="{StaticResource T.CardTitle}" Margin="0,0,0,12" />
+                                    <ItemsControl ItemsSource="{Binding Stats}" Style="{StaticResource StatGrid}" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Engines -->
+                            <TextBlock Text="Engines" Style="{StaticResource T.Section}" />
+                            <ItemsControl ItemsSource="{Binding Engines}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <c:MasonryPanel MinColumnWidth="220" Spacing="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:EngineTile}">
+                                        <Border Style="{StaticResource Card}" Padding="14,12">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,0,0,8">
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Value}" FontWeight="SemiBold" />
+                                                    <TextBlock Text="{Binding Name}" Style="{StaticResource T.Label}" />
+                                                </DockPanel>
+                                                <c:LiveChart Height="64" Series="{Binding Series}" Stroke="{DynamicResource Brush.Gpu}" Maximum="100" StrokeThickness="1.4" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Memory + sensors charts -->
+                            <TextBlock Text="Memory and sensors" Style="{StaticResource T.Section}" />
+                            <c:MasonryPanel MinColumnWidth="300" Spacing="16">
+                                <Border Style="{StaticResource Card}">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding DedicatedText}" Style="{StaticResource T.Label}" />
+                                            <TextBlock Text="Dedicated memory" Style="{StaticResource T.CardTitle}" />
+                                        </DockPanel>
+                                        <c:LiveChart Height="110" Series="{Binding DedicatedSeries}" Stroke="{DynamicResource Brush.Mem}" Maximum="100" ScaleUnit="%" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding SharedText}" Style="{StaticResource T.Label}" />
+                                            <TextBlock Text="Shared memory" Style="{StaticResource T.CardTitle}" />
+                                        </DockPanel>
+                                        <c:LiveChart Height="110" Series="{Binding SharedSeries}" Stroke="{DynamicResource Brush.Mem}" Maximum="100" ScaleUnit="%" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Visibility="{Binding HasTemp, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding TempText}" Style="{StaticResource T.Label}" />
+                                            <TextBlock Text="Temperature" Style="{StaticResource T.CardTitle}" />
+                                        </DockPanel>
+                                        <c:LiveChart Height="110" Series="{Binding TempSeries}" Stroke="{DynamicResource Brush.Temp}" Maximum="100" ScaleUnit="C" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}" Visibility="{Binding HasPower, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel>
+                                        <DockPanel Margin="0,0,0,10">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding PowerText}" Style="{StaticResource T.Label}" />
+                                            <TextBlock Text="Board power" Style="{StaticResource T.CardTitle}" />
+                                        </DockPanel>
+                                        <c:LiveChart Height="110" Series="{Binding PowerSeries}" Stroke="{DynamicResource Brush.Power}" Maximum="0" MinimumScale="10" ScaleUnit="W" />
+                                    </StackPanel>
+                                </Border>
+                            </c:MasonryPanel>
+
+                            <TextBlock Text="Details" Style="{StaticResource T.Section}" />
+                            <ItemsControl ItemsSource="{Binding Sections}" Style="{StaticResource SectionList}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,9 @@
+<!-- Downloads Microsoft's Windows SDK build tools (makeappx, makepri, signtool) from NuGet for the MSIX build. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageDownload Include="Microsoft.Windows.SDK.BuildTools" Version="[10.0.26100.4654]" />
+  </ItemGroup>
+</Project>

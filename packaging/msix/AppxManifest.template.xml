@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MSIX manifest for the Microsoft Store. packaging\build.ps1 fills in the {{tokens}} from store\identity.json. -->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 desktop rescap">
+
+  <Identity Name="{{IdentityName}}" Publisher="{{Publisher}}" Version="{{Version}}" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>{{DisplayName}}</DisplayName>
+    <PublisherDisplayName>{{PublisherDisplayName}}</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Hardware information, live monitoring, fan control and stress testing for Windows PCs.</Description>
+  </Properties>
+
+  <Dependencies>
+    <!-- 2004 (19041) is the first release that supports allowElevation for packaged desktop apps. -->
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="CPUx" Executable="CPUx.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="{{DisplayName}}" Description="Hardware monitor, fan control and stress test"
+                          BackgroundColor="transparent"
+                          Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png"
+                         Square310x310Logo="Assets\LargeTile.png" ShortName="CPUx">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+            <uap:ShowOn Tile="square310x310Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+      </uap:VisualElements>
+      <Extensions>
+        <!-- "Start with Windows" in Settings toggles this task (registry Run keys are virtualized in packages). -->
+        <desktop:Extension Category="windows.startupTask" Executable="CPUx.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="CPUxStartup" Enabled="false" DisplayName="CPUx" />
+        </desktop:Extension>
+        <!-- Lets the app run as "cpux" from a terminal, e.g. for exporting a report. -->
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="CPUx.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="cpux.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- A Win32 desktop app. -->
+    <rescap:Capability Name="runFullTrust" />
+    <!-- build.ps1 -AllowElevation adds allowElevation here ("Restart as administrator"). The Store approves it only
+         under strict criteria and asks you to email reportapp@microsoft.com first, so it is off by default. -->
+{{ElevationCapability}}
+  </Capabilities>
+</Package>

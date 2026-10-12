@@ -1,0 +1,7 @@
+{
+  "_comment": "Copy these values from Partner Center > your app > Product management > Product identity. The Store rejects the package until they match. DisplayName must be exactly the product name you reserved.",
+  "DisplayName": "CPUx",
+  "IdentityName": "KuldipGami.CPUx",
+  "Publisher": "CN=6B0590BC-9ABE-4F13-82CC-2D3941731FB5",
+  "PublisherDisplayName": "Kuldip Gami"
+}

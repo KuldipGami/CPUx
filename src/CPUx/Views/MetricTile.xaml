@@ -1,0 +1,39 @@
+<UserControl x:Class="CPUx.Views.MetricTile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CPUx.Controls"
+             x:Name="Root">
+    <Button Style="{StaticResource CardButton}" Command="{Binding Command, ElementName=Root}"
+            CommandParameter="{Binding CommandParameter, ElementName=Root}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel>
+                <Border Style="{StaticResource IconTile}" Background="{Binding Soft, ElementName=Root}">
+                    <c:Icon Data="{Binding Icon, ElementName=Root}" Foreground="{Binding Accent, ElementName=Root}" Width="18" Height="18" />
+                </Border>
+                <Border DockPanel.Dock="Right" Style="{StaticResource Chip}"
+                        Visibility="{Binding Badge, ElementName=Root, Converter={StaticResource HasValue}}">
+                    <StackPanel Orientation="Horizontal">
+                        <c:Icon Data="{StaticResource I.Thermometer}" Width="13" Height="13" Foreground="{DynamicResource Brush.Temp}" />
+                        <TextBlock Text="{Binding Badge, ElementName=Root}" FontSize="12" Margin="4,0,0,0" />
+                    </StackPanel>
+                </Border>
+                <StackPanel Margin="12,0,8,0" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title, ElementName=Root}" Style="{StaticResource T.CardTitle}" />
+                    <TextBlock Text="{Binding Caption, ElementName=Root}" Style="{StaticResource T.Caption}" />
+                </StackPanel>
+            </DockPanel>
+            <TextBlock Grid.Row="1" Text="{Binding Value, ElementName=Root}" Style="{StaticResource T.Big}" Margin="0,14,0,0" />
+            <TextBlock Grid.Row="2" Text="{Binding Sub, ElementName=Root}" Style="{StaticResource T.Label}" Margin="0,1,0,0" />
+            <c:LiveChart Grid.Row="3" Height="66" Margin="0,12,0,0" Series="{Binding Series, ElementName=Root}"
+                         Series2="{Binding Series2, ElementName=Root}" Stroke="{Binding Accent, ElementName=Root}"
+                         Stroke2="{Binding Accent2, ElementName=Root}" Maximum="{Binding Maximum, ElementName=Root}"
+                         ScaleUnit="{Binding ScaleUnit, ElementName=Root}" MinimumScale="{Binding MinimumScale, ElementName=Root}" />
+        </Grid>
+    </Button>
+</UserControl>

@@ -1,0 +1,71 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- UpgradeCode must never change: it is how new versions find and replace old ones. -->
+  <Package Name="CPUx"
+           Manufacturer="$(var.Manufacturer)"
+           Version="$(var.Version)"
+           UpgradeCode="3C962823-2233-45F0-9ED6-BB561B83B533"
+           Scope="perMachine"
+           Compressed="yes">
+
+    <SummaryInformation Description="CPUx — hardware monitor, fan control and stress test" />
+    <!-- AllowSameVersionUpgrades: a rebuilt installer of the same version replaces the installed one instead of adding a second entry. -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of CPUx is already installed." AllowSameVersionUpgrades="yes" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Windows 10 version 1607 or newer, 64-bit. -->
+    <Launch Condition="Installed OR VersionNT64 &gt;= 603" Message="CPUx requires 64-bit Windows 10 or Windows 11." />
+
+    <Icon Id="CPUxIcon" SourceFile="$(var.IconFile)" />
+    <Property Id="ARPPRODUCTICON" Value="CPUxIcon" />
+    <Property Id="ARPCOMMENTS" Value="Hardware information, live monitoring, fan control and stress testing." />
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLFOLDER]" After="CostFinalize" />
+
+    <!-- Set INSTALLDESKTOPSHORTCUT=0 on the msiexec command line to skip the desktop shortcut. -->
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="CPUx" />
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="CPUx" Level="1" AllowAbsent="no">
+      <!-- Every file of the self-contained publish (app + .NET runtime), so no separate .NET install is needed. -->
+      <Files Directory="INSTALLFOLDER" Include="$(var.PublishDir)**" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut" Guid="6E0A8B8E-3D0B-4C1B-9B2E-6C41D2F0A1C3">
+        <Shortcut Id="StartMenuShortcut" Name="CPUx" Description="Hardware monitor, fan control and stress test"
+                  Target="[INSTALLFOLDER]CPUx.exe" WorkingDirectory="INSTALLFOLDER" Icon="CPUxIcon" />
+        <RegistryValue Root="HKMU" Key="Software\CPUx\Installer" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="0B7F1F5D-6A51-4E57-A3F6-8C2D7E9B4A10" Condition="INSTALLDESKTOPSHORTCUT = 1">
+        <Shortcut Id="DesktopShortcut" Name="CPUx" Description="Hardware monitor, fan control and stress test"
+                  Target="[INSTALLFOLDER]CPUx.exe" WorkingDirectory="INSTALLFOLDER" Icon="CPUxIcon" />
+        <RegistryValue Root="HKMU" Key="Software\CPUx\Installer" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- Wizard: Welcome → install folder → install → finish (with "Launch CPUx"). No license page. -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <UI>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" />
+      <Publish Dialog="ExitDialog" Control="Finish" Property="WixShellExecTarget" Value="[INSTALLFOLDER]CPUx.exe" Order="1" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchCPUx" Order="2"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.AssetsDir)banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.AssetsDir)dialog.bmp" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch CPUx" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+
+    <CustomAction Id="LaunchCPUx" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
+  </Package>
+</Wix>

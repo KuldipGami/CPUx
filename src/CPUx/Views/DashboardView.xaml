@@ -1,0 +1,160 @@
+<UserControl x:Class="CPUx.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CPUx.Controls"
+             xmlns:v="clr-namespace:CPUx.Views"
+             xmlns:vm="clr-namespace:CPUx.ViewModels">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel>
+            <!-- One tile per component: every GPU and every connected drive (USB drives included) gets its own graph. -->
+            <ItemsControl ItemsSource="{Binding Tiles}" Focusable="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <c:MasonryPanel MinColumnWidth="300" Spacing="16" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:DashTile}">
+                        <v:MetricTile x:Name="Tile" Title="{Binding Title}" Caption="{Binding Caption}" Value="{Binding Value}" Sub="{Binding Sub}"
+                                      Badge="{Binding Badge}" Series="{Binding Chart}" Series2="{Binding Chart2}"
+                                      Maximum="{Binding Maximum}" MinimumScale="{Binding MinimumScale}" ScaleUnit="{Binding ScaleUnit}"
+                                      Icon="{StaticResource I.Cpu}" Accent="{DynamicResource Brush.Cpu}" Soft="{DynamicResource Soft.Cpu}"
+                                      Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                      CommandParameter="{Binding Target}" />
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Kind}" Value="Gpu">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Gpu}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Gpu}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Gpu}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Kind}" Value="Memory">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Memory}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Mem}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Mem}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Kind}" Value="Disk">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Storage}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Disk}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Disk}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Kind}" Value="Usb">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Usb}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Disk}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Disk}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Kind}" Value="Network">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Network}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Net}" />
+                                <Setter TargetName="Tile" Property="Accent2" Value="{DynamicResource Brush.Mem}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Net}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Kind}" Value="Battery">
+                                <Setter TargetName="Tile" Property="Icon" Value="{StaticResource I.Battery}" />
+                                <Setter TargetName="Tile" Property="Accent" Value="{DynamicResource Brush.Battery}" />
+                                <Setter TargetName="Tile" Property="Soft" Value="{DynamicResource Soft.Battery}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <c:MasonryPanel MinColumnWidth="420" Spacing="16" Margin="0,16,0,0">
+                <!-- System summary -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Accent.Soft}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.Info}" Foreground="{DynamicResource Accent}" Width="16" Height="16" />
+                            </Border>
+                            <TextBlock Text="System summary" Style="{StaticResource T.CardTitle}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding Summary}" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource Stroke.Divider}" BorderThickness="0,1,0,0" Padding="0,8" Background="Transparent">
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Copy value" Command="{Binding CopyValueCommand}" />
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Label}" Style="{StaticResource T.Label}" FontSize="12.5" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Vitals -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,14">
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Temp}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.Heart}" Foreground="{DynamicResource Brush.Temp}" Width="16" Height="16" />
+                            </Border>
+                            <TextBlock Text="Vitals" Style="{StaticResource T.CardTitle}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding Health}" Style="{StaticResource StatGrid}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Top processes -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Link}" Content="View all"
+                                    Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="Processes" VerticalAlignment="Center" />
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Cpu}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.Activity}" Foreground="{DynamicResource Brush.Cpu}" Width="16" Height="16" />
+                            </Border>
+                            <TextBlock Text="Top processes" Style="{StaticResource T.CardTitle}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding TopProcesses}" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type vm:TopProcess}">
+                                    <Grid Margin="0,7">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="70" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                            <ProgressBar Style="{StaticResource Bar}" Height="3" Margin="0,5,16,0" Value="{Binding CpuValue, Mode=OneWay}"
+                                                         Foreground="{DynamicResource Brush.Cpu}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding Memory}" Style="{StaticResource T.Label}" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Cpu}" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Top" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Volumes -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,8">
+                            <Border Style="{StaticResource IconTile}" Background="{DynamicResource Soft.Disk}" Width="30" Height="30">
+                                <c:Icon Data="{StaticResource I.Database}" Foreground="{DynamicResource Brush.Disk}" Width="16" Height="16" />
+                            </Border>
+                            <TextBlock Text="Volumes" Style="{StaticResource T.CardTitle}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <ItemsControl ItemsSource="{Binding Volumes}" ItemTemplate="{StaticResource VolumeTemplate}" Focusable="False" />
+                        <TextBlock Text="Loading drives…" Style="{StaticResource T.Caption}"
+                                   Visibility="{Binding Volumes.Count, Converter={StaticResource HasValue}, ConverterParameter=invert}" />
+                    </StackPanel>
+                </Border>
+            </c:MasonryPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

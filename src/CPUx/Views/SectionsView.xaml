@@ -1,0 +1,11 @@
+<UserControl x:Class="CPUx.Views.SectionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <Grid>
+            <TextBlock Text="Reading hardware…" Style="{StaticResource T.Subtitle}" Margin="0,40" HorizontalAlignment="Center"
+                       Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+            <ItemsControl ItemsSource="{Binding Sections}" Style="{StaticResource SectionList}" />
+        </Grid>
+    </ScrollViewer>
+</UserControl>

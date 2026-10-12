@@ -1,0 +1,19 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!--
+    Builds the Windows Installer package (CPUx-Setup-<version>-x64.msi) from a self-contained publish.
+    Normally run through packaging\build.ps1, which publishes the app first and passes PublishDir/Version.
+  -->
+  <PropertyGroup>
+    <Version Condition="'$(Version)' == ''">1.1.0</Version>
+    <PublishDir Condition="'$(PublishDir)' == ''">$(MSBuildThisFileDirectory)..\..\artifacts\publish\</PublishDir>
+    <Manufacturer Condition="'$(Manufacturer)' == ''">CPUx</Manufacturer>
+    <OutputName>CPUx-Setup-$(Version)-x64</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <DefineConstants>Version=$(Version);PublishDir=$(PublishDir);Manufacturer=$(Manufacturer);AssetsDir=$(MSBuildThisFileDirectory);IconFile=$(MSBuildThisFileDirectory)..\..\src\CPUx\Assets\cpux.ico</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+</Project>
