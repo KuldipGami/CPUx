@@ -25,7 +25,7 @@ If the name is already taken when you reserve it, alternatives: *CPUx Hardware M
 > A graph for the processor, every GPU, memory, every connected drive, network and battery, updating every second. A compact always-on-top mini monitor and a tray icon with live readings are one click away.
 >
 > FAN CONTROL
-> Set each fan to a fixed speed or leave it on automatic. Works with ASUS laptops (CPU, GPU and system fans, plus Silent / Performance / Turbo modes), desktop motherboards with a supported controller, and desktop graphics cards. A safety option hands a slowed-down fan back to automatic when the CPU or GPU gets too hot, and every change is undone when CPUx closes.
+> Set each fan to a fixed speed or leave it on automatic. Works with ASUS laptops (CPU, GPU and system fans, plus Silent / Performance / Turbo modes) and supported desktop graphics cards. A safety option hands a slowed-down fan back to automatic when the CPU or GPU gets too hot, and every change is undone when CPUx closes.
 >
 > STRESS TEST
 > Check stability under full load: processor, graphics, memory and storage — one at a time or all together. Every result is verified for errors, with live temperature, clock and power graphs, automatic safety stops and a results summary.
@@ -37,9 +37,12 @@ If the name is already taken when you reserve it, alternatives: *CPUx Hardware M
 >
 > CPUx works without any account and never sends your data anywhere.
 >
-> Some readings (CPU voltages, motherboard sensors, SMART data) require running CPUx as administrator with the free PawnIO driver; the app explains this where it applies.
+> Windows only gives some readings to apps running as administrator, which Store apps can't do. On ASUS laptops CPUx still shows the CPU temperature; on other PCs, CPU temperature and voltages, motherboard sensors and drive health (SMART) data aren't available, and the app says so where it applies.
 
 ## What's new in this version
+
+Leave this empty for the first submission (Microsoft's guidance). Use it for the next update:
+
 
 > • Dashboard graphs for every GPU and every connected drive, including USB flash drives
 > • New Fan control page: set each fan's speed individually
@@ -98,4 +101,4 @@ From `packaging/store/images/`: `store-logo-300x300.png` (1:1 app tile icon), `b
 | Copyright | © 2026 Kuldip Gami |
 | Age rating | Complete the questionnaire: no violence, no user interaction, no data sharing, no purchases → rated for all ages |
 | System requirements | Windows 10 version 2004 or newer, 64-bit; 4 GB RAM recommended |
-| Hardware note (recommended field) | "Fan control requires supported hardware (ASUS laptops, desktop boards with a supported controller, desktop GPUs)." |
+| Additional system requirements (Store listing → Supplemental fields) | Minimum hardware: "Fan control requires an ASUS laptop or a supported desktop graphics card" |

@@ -66,9 +66,9 @@ By default the package declares one restricted capability, `runFullTrust`, which
 ### Notes for certification
 
 > CPUx needs no account or sign-in. All features are available right after launch from the sidebar.
-> • Fan control works only on supported hardware (ASUS laptops, desktop motherboards with a supported Super I/O chip and administrator rights, desktop GPUs). On other PCs the page explains that fans can't be controlled, which is expected.
+> • Fan control works only on supported hardware (ASUS laptops and supported desktop graphics cards). On other PCs the page explains that fans can't be controlled, which is expected.
 > • The Stress test page intentionally puts the CPU/GPU/memory/disk under full load until the chosen duration ends or the user presses Stop.
-> • Readings marked as needing administrator rights appear after "Restart as administrator".
+> • Some sensors (CPU voltages, motherboard, drive health) show as unavailable without administrator rights, which is expected in the Store version.
 > • The app makes no network connections.
 
 ### Testing the MSIX before uploading (optional)
